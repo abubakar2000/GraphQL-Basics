@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./scripts/css/bootstrap.min.css">
+    <script src="scripts/angular.min.js"></script>
+    <title>Home</title>
+    <script>
+        var app = angular.module('loginApp', []);
+        app.controller('onClickClick', function ($scope, $http) {
+            $scope.clickCount = 0;
+            $scope.listing_id = "";
+            $scope.select = function (prop) {
+                $scope.listing_id = prop;
+            }
+            $http(
+                {
+                    method: 'POST',
+                    url: 'http://localhost:4000/?query=' +
+                        `{listListings{listing_title listing_id description street city postal_code price email username}}`,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                })
+                .then(res2 => {
+                    $scope.Listings = res2.data.data.listListings
+                    console.log($scope.Listings);
+                })
+                .catch(err2 => {
+
+                })
+
+            $http(
+                {
+                    method: 'POST',
+                    url: 'http://localhost:4000/?query=' +
+                        `{listBookings{listing_id booking_id booking_start booking_end username}}`,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                })
+                .then(res2 => {
+                    $scope.Bookings = res2.data.data.listBookings
+                    console.log($scope.Bookings);
+                })
+                .catch(err2 => {
+
+                })
+
+
+            $scope.increment = function () {
+                $http(
+                    {
+                        method: 'POST',
+                        url: 'http://localhost:4000/?query=' +
+                            `mutation{ AddUser(username:\"${$scope.username}\",firstname:\"${$scope.firstname}\",lastname:\"${$scope.lastname}\",password:\"${$scope.password}\",email:\"${$scope.email}\",type:customer){type}}`,
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                    })
+                    .then(function (res) {
+                        location.replace('login.html')
+                        console.log(res.data);
+                    })
+                    .catch(function (res) {
+                        console.log(res);
+                    })
+            }
+
+            $scope.BookListing = function () {
+                $http(
+                    {
+                        method: 'POST',
+                        url: 'http://localhost:4000/?query=' +
+                            `mutation {BookListing(listing_id:"${$scope.listing_id}", booking_date:"${$scope.booking_date}", booking_start:"${$scope.booking_start}", booking_end:"${$scope.booking_end}", username:"${$scope.username}") {listing_id booking_id booking_start booking_end username}}`,
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                    })
+                    .then(res2 => {
+                        $scope.Bookings = res2.data.data.Bookings
+                        console.log($scope.Bookings);
+                    })
+                    .catch(err2 => {
+
+                    })
+            }
+        })
+    </script>
+</head>
+
+<body ng-app="loginApp" ng-controller="onClickClick" style="height: 100vh;width: 100%;">
+    <div style="background-color: rgb(233, 81, 0);color: white;padding-top: 1vh;padding-bottom: 1vh;
+text-align: center;box-shadow: 0px 0px 30px orange;" class="container">
+        <h1>AirBnB</h1>
+        <div style="display: flex;flex-direction: row;justify-content: space-between;padding-left: 20pt;padding-right: 20pt;">
+            <a href="login.html" style="text-decoration: none;color: white;">User Signin</a>
+            <!-- <a href="adminlogin.html" style="text-decoration: none;color: white;">Admin Signin</a> -->
+            <a href="signup.html" style="text-decoration: none;color: white;">User Signup</a>
+            <!-- <a href="admin.signup.html" style="text-decoration: none;color: white;">Admin Signup</a> -->
+            <a href="home.html" style="text-decoration: none;color: white;">Home</a>
+            <!-- <a href="admin.home.html" style="text-decoration: none;color: white;">Add Listing</a> -->
+        </div>
+    </div>
+    <div style="width: 100%;justify-content: space-evenly;
+    align-items: flex-start;display: flex;flex-wrap: wrap;padding-top: 10vh;">
+        <div>
+            <h1 style="color: orange;margin-bottom: 7vh;">Current Listings</h1>
+            <div class="card" ng-click="select(listing.listing_id)" ng-repeat="listing in Listings"
+                style="cursor: pointer;margin-bottom: 10pt;">
+                <div class="card-header card-title" style="font-weight: bold;padding: 5pt;">ID: {{listing.listing_id}}
+                </div>
+                <div class="card-body" style="padding: 10pt;">
+                    <div>Room: {{listing.listing_title}}</div>
+                    <div style="color: gray;">{{listing.street}}, {{listing.city}} - {{listing.postal_code}}</div>
+                </div>
+                <div class="card-footer" style="font-weight: bold;color: gray;">$ {{listing.price}}
+                </div>
+            </div>
+        </div>
+        <div>
+            <h1 style="color: orange;margin-bottom: 7vh;">Book Listing</h1>
+            <div>
+                <input style="margin-bottom: 10pt;" class="form-control" type="text" ng-model="listing_id"
+                    placeholder="Select by clicking Listing" disabled>
+            </div>
+            <div>
+                <input style="margin-bottom: 10pt;" class="form-control" type="datetime-local" ng-model="booking_date"
+                    placeholder="Select Date">
+            </div>
+            <div>
+                <input style="margin-bottom: 10pt;" class="form-control" type="datetime-local" ng-model="booking_start"
+                    placeholder="Select Start Date">
+            </div>
+            <div>
+                <input style="margin-bottom: 10pt;" class="form-control" type="datetime-local" ng-model="booking_end"
+                    placeholder="Select by End Date">
+            </div>
+            <div>
+                <input style="margin-bottom: 10pt;" class="form-control" type="text" ng-model="username"
+                    placeholder="Please enter username">
+            </div>
+            <button class="btn btn-outline-success" ng-click="BookListing()">Book</button>
+        </div>
+        <div>
+            <h1 style="color: orange;margin-bottom: 7vh;">Your Bookings</h1>
+            <div class="card col-12" ng-repeat="listing in Bookings"
+                style="padding: 0pt;margin: 5pt;border: 1px solid rgb(220,220,220);">
+                <div class="card-title card-header" style="font-weight: bold;padding: 5pt;">Listing ID:
+                    {{listing.listing_id}}</div>
+                <div style="padding:10pt">
+                    <div>ID: {{listing.booking_id}}</div>
+                    <div>By: {{listing.username}}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,117 @@
+{
+    listUsers{
+        id
+        username
+        lastname
+        type
+    }
+}
+
+-----------
+
+
+
+-- vars
+{
+    "username": "codingdeamon",
+    "firstname": "Codeetron",
+    "lastname": "edoc",
+    "password": "4321",
+    "email": "edoc@solutionave.com",
+    "type": "customer" / "admin"
+}
+
+-----------
+
+{
+    login_admin(username:"codingdeamon",password:"4321")
+}
+
+-----------
+
+{
+    login_admin(username:"codingdeamonaa",password:"4321")
+}
+
+------
+
+mutation createListing (
+    $listing_title: String!,
+    $description: String!,
+    $street: String!,
+    $city: String!,
+    $postal_code: String!,
+    $price: Int!,
+    $email: String!,
+    $username: String!
+){
+    CreateListing(
+        listing_title: $listing_title,
+        description: $description,
+        street: $street,
+        city: $city,
+        postal_code: $postal_code,
+        price:$price,
+        email:$email,
+        username: $username
+    ){
+            listing_id
+            listing_title
+            description
+            street
+            city
+            postal_code
+            price
+            email
+            username
+    }
+}
+
+-- vars
+
+{
+    "listing_title":"New one",
+    "description":"A good listing",
+    "street":"Street 6",
+    "city":"Sialkot",
+    "postal_code":"51310",
+    "price":150,
+    "email":"abubakarmughal2k@gmail.com",
+    "username":"abubakar2000"
+}
+
+---------------
+
+mutation AddBooking(
+    $booking_date:String!,
+    $booking_start:String!,
+    $booking_end:String!,
+    $username:String!,
+){
+    BookListing(
+        booking_date: $booking_date,
+        booking_start: $booking_start,
+        booking_end: $booking_end,
+        username: $username
+    ){
+            booking_id
+            booking_date
+            booking_start
+            booking_end
+            username
+    }
+}
+
+-- vars
+
+{
+    "booking_date": "24/5/2022",
+    "booking_start": "10/1/2022",
+    "booking_end": "30/5/2022",
+    "username": "abubakar2000"
+}
+
+-----------
+
+
+curl http://localhost:4000/ -X POST -H 'content-type: application/json' --data '{ "query": "mutation { CreateListing( listing_title: \"$listing_title\", description: \"$description\", street: \"$street\", city: \"$city\", postal_code: \"$postal_code\", price:0, email:\"$email\", username: \"$username\" ){ listing_id listing_title description street city postal_code price email username}}"}'

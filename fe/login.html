@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./scripts/css/bootstrap.min.css">
+    <script src="scripts/angular.min.js"></script>
+    <title>User Login</title>
+    <script>
+        var app = angular.module('loginApp', []);
+        app.controller('onClickClick', function ($scope, $http) {
+            $scope.clickCount = 0;
+            $scope.increment = function () {
+                $scope.clickCount = $scope.clickCount + 1
+                $http(
+                    {
+                        method: 'POST',
+                        url: 'http://localhost:4000?query=' +
+                            `{login_customer(username:"${$scope.username}",password:"${$scope.password}")}`,
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                    })
+                    .then(function (res) {
+                        if (res.data.data.login_customer === true) {
+                            location.replace('home.html')
+                        } else {
+                            alert("Invalid User")
+                        }
+                    })
+                    .catch(function (res) {
+                        console.log(res);
+                    })
+            }
+        })
+    </script>
+</head>
+
+<body ng-app="loginApp" ng-controller="onClickClick" style="height: 100vh;width: 100%;">
+    <div style="background-color: rgb(233, 81, 0);color: white;padding-top: 1vh;padding-bottom: 1vh;
+text-align: center;box-shadow: 0px 0px 30px orange;" class="container">
+        <h1>AirBnB</h1>
+        <div
+            style="display: flex;flex-direction: row;justify-content: space-between;padding-left: 20pt;padding-right: 20pt;">
+            <a href="login.html" style="text-decoration: none;color: white;">User Signin</a>
+            <!-- <a href="adminlogin.html" style="text-decoration: none;color: white;">Admin Signin</a> -->
+            <a href="signup.html" style="text-decoration: none;color: white;">User Signup</a>
+            <!-- <a href="admin.signup.html" style="text-decoration: none;color: white;">Admin Signup</a> -->
+            <!-- <a href="home.html" style="text-decoration: none;color: white;">Home</a> -->
+            <!-- <a href="admin.home.html" style="text-decoration: none;color: white;">Add Listing</a> -->
+        </div>
+    </div>
+    <br>
+    <br>
+    <div style="text-align: center;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h1>User Login</h1>
+                    <div>
+                        <input class="form-control" style="margin-bottom: 10pt;" type="text" ng-model="username"
+                            placeholder="Username">
+                    </div>
+                    <div>
+                        <input class="form-control" style="margin-bottom: 10pt;" type="text" ng-model="password"
+                            placeholder="Password">
+                    </div>
+
+                    <button class="btn btn-outline-dark" ng-click="increment()">
+                        Log In
+                    </button>
+                    <div style="margin-top: 10pt;">
+                        Dont have account? Let's <a href="signup.html">Signup</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
